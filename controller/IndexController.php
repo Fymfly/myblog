@@ -3,6 +3,6 @@ namespace controller;
 
 class IndexController {
     public function index() {
-        echo 'index';
+        phpinfo();
     }
 }
