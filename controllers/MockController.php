@@ -1,5 +1,5 @@
 <?php
-namespace controller;
+namespace controllers;
 
 use PDO;
 

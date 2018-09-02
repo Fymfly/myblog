@@ -1,8 +1,8 @@
 <?php
-namespace controller;
+namespace controllers;
 
 class IndexController {
     public function index() {
-        phpinfo();
+        echo 'index';
     }
 }

@@ -1,5 +1,5 @@
 <?php
-namespace controller;
+namespace controllers;
 
 // 引入模型类
 use models\User;
