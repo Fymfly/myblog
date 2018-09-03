@@ -22,9 +22,11 @@ class BlogController {
 
     // 为所有的日志生成详情页（静态页）
     public function content_to_html()
-    {
+    {   
+        
         $blog = new Blog;
-        $blog->content2html();
+        $a = $blog->content2html();
+        echo $a;
     }
 
 

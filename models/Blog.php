@@ -117,13 +117,15 @@ class Blog
     {
         $stmt = $this->pdo->query('SELECT * FROM blogs');
         $blogs = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
+        echo "<pre>";
+        // var_dump($blogs);
         // 开启缓冲区
-        ob_start();
+        
 
         // 生成静态页
         foreach($blogs as $v)
-        {
+        {   
+            ob_start();
             // 加载视图
             view('blogs.content', [
                 'blog' => $v,
@@ -134,7 +136,13 @@ class Blog
             file_put_contents(ROOT.'public/contents/'.$v['id'].'.html', $str);
             // 清空缓冲区
             ob_clean();
+            // return 1;
+            // echo ROOT.'public/contents/'.$v['id'].'.html';
+            // echo 1123; 
+
+            
         }
+        
     }
 
     // 在首页取出20条数据
