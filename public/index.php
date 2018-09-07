@@ -1,115 +1,174 @@
 <?php
-// 定义常量
-define('ROOT', dirname(__FILE__) . '/../');
 
-// 引入 composer 自动加载文件
+    //设置SESSION 保存
+    ini_set('session.save_handler','redis');
+    ini_set('session.save_path','tcp://127.0.0.1:6379?database=3');
+
+    //开启session
+    session_start();
+
+//定义常量
+            //获取当前文件的路径
+define('ROOT',dirname(__FILE__).'/../');
+
+//引入 composer 自动加载文件
 require(ROOT.'vendor/autoload.php');
 
-// 实现类的自动加载
-function autoload($class)
-{
-    $path = str_replace('\\', '/', $class);
-
-    require(ROOT . $path . '.php');
+//类的自动加载
+function autoload($class){
     // echo $class;
-}
-spl_autoload_register('autoload');
-
-// 添加路由 ：解析 URL 浏览器上 blog/index  CLI中就是 blog index
-
-if(php_sapi_name() == 'cli') {
-
-    $controller = ucfirst($argv[1]) . 'Controller';
-    $action = $argv[2];
-
-} else {
+    $path = str_replace('\\','/',$class);
     
-    if(isset($_SERVER['PATH_INFO'])) {
-        
+    require ROOT.$path.'.php';
+ 
+}
+    //注册加载函数
+    spl_autoload_register('autoload');
+
+//添加路由：解析URL浏览器上blog/index CLI中就是 blog index
+  if(php_sapi_name()=='cli'){
+    
+    //得到控制器和方法名
+    $controller = ucfirst($argv[1]).'Controller';
+    $action = $argv[2];
+   
+  }else{
+    if( isset($_SERVER['PATH_INFO']) )
+    {
         $pathInfo = $_SERVER['PATH_INFO'];
         // 根据 / 转成数组
-        $pathInfo = explode('/',$pathInfo);
-        // 得到控制名和方法名
-        $controller = ucfirst($pathInfo[1]).'Controller';
+        $pathInfo = explode('/', $pathInfo);
+
+        // 得到控制器名和方法名 ：
+        $controller = ucfirst($pathInfo[1]) . 'Controller';
         $action = $pathInfo[2];
-
-    } else {
-
-        // 默认控制器和方法
-        $controller = 'IndexController';
-        $action = 'index';
-    }
-
+    }else{
+    //默认控制器和方法
+    $controller = 'IndexController';
+    $action = 'Index';
+  }
 }
+ 
+
+  $fullController = 'controllers\\'.$controller;
+//   var_dump('<br>');
+//   var_dump($fullController);
+  $C = new $fullController;
+  $C->$action();
+
+
 
     
+  //第一参数：要加载的视图文件的 文件名
+  //第二参数：想视图中传递的数组
+  function view($viewFileName,$data = [ ]){
 
-// 为控制器添加命名空间
-$fullController = 'controllers\\'.$controller;
+     // extract 可以把一个数组转为多个变量
+      extract($data);
 
+   
+     // 加载视图文件
+      $path = str_replace('.','/',$viewFileName);
+      require(ROOT.'views/'.$path.'.html');
+    // echo ROOT.'views'.$path.'.html';
+   
+  
+    }
+    //获取当前URL上的参数 并且还能排除掉某些参数
+    function getUrlParams($except = [])
+    {
+        $ret = '';
+    
+        foreach($_GET as $k => $v)
+        {
+            if(!in_array($k, $except))
+                $ret .= "&$k=$v";
+        }
+    
+        return $ret;
+    }
+    
+    function config($name)
+    {
+        static $config = null;
+        if($config === null)
+        {
+            // 引入配置文件 
+            $config = require(ROOT.'config.php');
+        }
+        return $config[$name];
+    }
+    function redirect($url){
+        header('Location:'.$url);
+        exit;
+    }
+    //跳回上一个页面
+    function back(){
+        redirect($_SESSION['HTTP_REFERER']);
+    }
 
-$_C = new $fullController;
-$_C->$action();
+    //提示信息的函数
+function message($message,$type,$url,$seconds =5){
+    if($type == 0){
+        echo "<script>alert('{$message}');location.href='{$url}';</script>";
+        exit;
 
-// 加载视图
-// 参数一、加载的视图的文件名
-// 参数二、向视图中传的数据
-function view($viewFileName, $data = [])
-{
-    // 解压数组成变量
-    extract($data);
-
-    $path = str_replace('.', '/', $viewFileName) . '.html';
-
-    // 加载视图
-    require(ROOT . 'views/' . $path);
+    }else if($type ==1){
+        //加载消息页面
+        view('common.success',[
+            'message' => $message,
+            'url'=> $url,
+            'seconds'=>$seconds
+        ]);
+    }else if($type ==2){
+        //消息保存到SESSION
+        $_SESSION['_MESS_'] = $message;
+        //跳转到下一个页面
+        redirect($url);
+    }
 }
 
-// 获取当前 URL 上所有的参数，并且还能排除掉某些参数
-// 参数：要排除的变量
-function getUrlParams($except = [])
-{
-    // ['odby','odway']
-    // 循环删除变量
-    foreach($except as $v)
-    {
-        unset($_GET[$v]);
 
-        // unset($_GET['odby']);
-        // unset($_GET['odway']);
-    }
-
-    /*
-    $_GET['keyword'] = 'xzb';
-    $_GET['is_show] = 1
-
-    // 拼出：  keyword=abc&is_show=1
-    */
-
-    $str = '';
-    foreach($_GET as $k => $v)
-    {
-        $str .= "$k=$v&";
-    }
-
-    return $str;
-
+// 过滤XSS
+function e($content) {
+    return htmlspecialchars($content);
 }
 
+// 使用 htmlpurifer 过滤
+function hpe($content) {
 
-// 获取配置文件（特点：无论调用多少次，只包含一次配置文件）
-// 静态局部变量：函数执行结束，也不会销毁，一直存到整个脚本
-// 普通局部亦是：函数执行完就销毁了
-function config($name) {
+    // 一直保存在内存中（知道脚本执行结束）
+    static $purifier = null;
 
-    static $config = null;
-    if($config === null) {
+    // 只有第一次调用时才会创建新的对象
+    if($purifier === null) {
 
-        // 引入配置文件
-        $config = require(ROOT.'config.php');
+        // 1. 生成配置对象
+        $config = \HTMLPurifier_Config::createDefault();
 
+        // 2. 配置
+        // 设置编码
+        $config->set('Core.Encoding', 'utf-8');
+        $config->set('HTML.Doctype', 'HTML 4.01 Transitional');
+        // 设置缓存目录
+        $config->set('Cache.SerializerPath', ROOT.'cache');
+        // 设置允许的 HTML 标签
+        $config->set('HTML.Allowed', 'script,div,b,strong,i,em,a[href|title],ul,ol,ol[start],li,p[style],br,span[style],img[width|height|alt|src],*[style|class],pre,hr,code,h2,h3,h4,h5,h6,blockquote,del,table,thead,tbody,tr,th,td');
+        // 设置允许的 CSS
+        $config->set('CSS.AllowedProperties', 'font,font-size,font-weight,font-style,margin,width,height,font-family,text-decoration,padding-left,color,background-color,text-align');
+        // 设置是否自动添加 P 标签
+        $config->set('AutoFormat.AutoParagraph', TRUE);
+        // 设置是否删除空标签
+        $config->set('AutoFormat.RemoveEmpty', TRUE);
+        // 3. 过滤
+        // 创建对象
+        $purifier = new \HTMLPurifier($config);
     }
 
-    return $config[$name];
+    
+    // 过滤
+    $clean_html = $purifier->purify($content);
+
+    return $clean_html;
 
 }

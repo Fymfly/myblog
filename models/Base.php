@@ -1,29 +1,18 @@
 <?php
-/*
-所有其他模型的父模型
-*/ 
-
 namespace models;
-
 use PDO;
 
-class Base {
+class Base{
+    public static $pdo = null;   
 
-    // 保存 PDO 对象
-    public static $pdo = null;
-
-    public function __construct() {
-
-        if(self::$pdo === null) {
-
-            $config = config('db');
-
-            // 取日志的数据
-            self::$pdo = new PDO('mysql:host='.$config['host'].';dbname='.$config['dbname'], $config['user'], $config['pass']);
-            self::$pdo->exec('SET NAMES '.$config['charset']);
-
+     public function __construct(){
+        if(self::$pdo === null){
+        
+        $config = config('db');
+             //连接数据库
+         self::$pdo = new \PDO('mysql:host='.$config['host'].';dbname='.$config['dbname'], $config['user'], $config['pass']);
+       self::$pdo->exec('SET NAMES '.$config['charset']);
         }
-
-    }
-
+        
+     }
 }

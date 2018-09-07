@@ -1,57 +1,60 @@
 <?php
 namespace controllers;
-
 use models\Blog;
 
-use PDO;
+class BlogController{
 
-class BlogController {
-
-    // 日志列表
-    public function index() {
+    //日志列表
+    public function index(){
 
         $blog = new BLog;
-
-        // 搜索日志
         $data = $blog->search();
-        // 加载视图
+
         view('blogs.index',$data);
-        
+       
     }
-
-
-    // 为所有的日志生成详情页（静态页）
-    public function content_to_html() {   
-        
+    //为日志生成详情页
+    public function content_to_html(){
         $blog = new Blog;
         $blog->content2html();
     }
-
-
-    // 翻页
-    public function index2html() {
+    public function index2html(){
         $blog = new Blog;
         $blog->index2html();
     }
 
 
-    // 浏览量
-    public function display() {
-       
-        // 接收日志ID
+    public function display()
+    {
+        //接收日志id
         $id = (int)$_GET['id'];
-
+        // echo $id;
+        // echo" <br/>";
         $blog = new Blog;
-
-        // 把浏览量+1，并输出（如果内存中没有就查询数据库，如果内存中有就直接操作内容） 
+        //把浏览量+1 并输出 （如果内存中没有就查询数据库，如果内存有就直接操作）
         echo $blog->getDisplay($id);
+
     }
-
-
-    // 回写浏览量到数据库
-    public function displayToDb() {
+    public function displayToDb(){
         $blog = new Blog;
         $blog->displayToDb();
     }
 
-}
+    // 显示添加日志的表单
+    public function create(){
+       view('blogs.create');
+    } 
+    public function store(){
+        $title = $_POST['title'];
+        $content = $_POST['content'];
+        $is_show = $_POST['is_show'];
+
+        $blog = new Blog;
+        $blog->add($title,$content,$is_show);
+
+        //跳转
+        message('发表成功',2,'/blog/index');
+    }
+  
+ }
+    

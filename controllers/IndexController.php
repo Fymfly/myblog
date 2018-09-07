@@ -1,9 +1,12 @@
 <?php
 namespace controllers;
 
-class IndexController {
-    public function index() {
-        // view('index.index');
-        echo 'index';
+class IndexController{
+    function index(){
+       view('index.index');
+    }
+
+    public function info(){
+        echo phpinfo();
     }
 }
