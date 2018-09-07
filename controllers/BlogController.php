@@ -8,16 +8,21 @@ class BlogController{
     public function index(){
 
         $blog = new BLog;
+        // 搜索数据
         $data = $blog->search();
 
         view('blogs.index',$data);
        
     }
+
+
     //为日志生成详情页
     public function content_to_html(){
         $blog = new Blog;
         $blog->content2html();
     }
+
+
     public function index2html(){
         $blog = new Blog;
         $blog->index2html();
@@ -35,6 +40,8 @@ class BlogController{
         echo $blog->getDisplay($id);
 
     }
+
+
     public function displayToDb(){
         $blog = new Blog;
         $blog->displayToDb();
@@ -44,6 +51,8 @@ class BlogController{
     public function create(){
        view('blogs.create');
     } 
+
+
     public function store(){
         $title = $_POST['title'];
         $content = $_POST['content'];

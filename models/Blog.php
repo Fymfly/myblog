@@ -3,10 +3,13 @@
 namespace Models;
 
 use PDO;
-class BLog extends Base{
+class Blog extends Base{
 
-      public function search(){     
-        $where = 1;
+      public function search(){
+        // 取出当前用户的日志
+        $where = 'user_id='.$_SESSION['id'];
+
+        // 放预处理对应的值
         $value = [];
         //如果传了 keyword 参数并且值不为空添加where 条件
         if(isset($_GET['keyword']) && $_GET['keyword']){
@@ -80,14 +83,16 @@ class BLog extends Base{
             
         }
 
-
-        //执行sql
-        $stmt = self::$pdo->prepare("select * from blogs where $where ORDER BY $odby $odway LIMIT $offset,$perpage");  
+    
+        /*================= 执行sql ============*/ 
+        // 预处理 SQL
+        $stmt = self::$pdo->prepare("SELECT * FROM blogs WHERE $where ORDER BY $odby $odway LIMIT $offset,$perpage");  
+        // 执行 SQL
         $stmt->execute($value);
+
+        // 取数据
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
        
-        // var_dump($data);
-        // echo "select * from blogs where $where";
         
 
         //加载视图
