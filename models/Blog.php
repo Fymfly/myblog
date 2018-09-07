@@ -5,9 +5,29 @@ namespace Models;
 use PDO;
 class Blog extends Base{
 
-      public function search(){
-        // 取出当前用户的日志
-        $where = 'user_id='.$_SESSION['id'];
+    // 删除日志
+    public function delete($id) {
+
+        // 只能删除自己的日志
+        $stmt = self::$pdo->prepare('DELETE FROM blogs WHERE id = ? AND user_id=?');
+        $stmt->execute([
+            $id,
+            $_SESSION['id'],
+        ]);
+    }
+
+    public function search(){
+        
+        // 判断是否登录
+        if(!isset($_SESSION['id'])) {
+
+            $where = 1;
+        } else {
+            // 取出当前用户的日志
+            $where = 'user_id='.$_SESSION['id'];
+        }
+        
+        // $where = 1;
 
         // 放预处理对应的值
         $value = [];
@@ -201,6 +221,7 @@ public function add($title,$content,$is_show)
     ]);
     if(!$ret){
         echo "失败";
+        alert('请先登录');
         //获取失败信息
         $error = $stmt->errorInfo();
         echo '<pre>';

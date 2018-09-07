@@ -1,11 +1,22 @@
 <?php
 
-    //设置SESSION 保存
-    ini_set('session.save_handler','redis');
-    ini_set('session.save_path','tcp://127.0.0.1:6379?database=3');
+//设置SESSION 保存
+ini_set('session.save_handler','redis');
+ini_set('session.save_path','tcp://127.0.0.1:6379?database=3');
+//开启session
+session_start();
 
-    //开启session
-    session_start();
+
+// 验证 CSRF 令牌（如果用户以 POST 方式访问网站就要验证）
+if( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
+    
+    if(!isset($_POST['_token'])) 
+        die('违法操作!');
+
+    if($_POST['_token'] != $_SESSION['token'])
+        die('违法操作!');
+}
+
 
 //定义常量
             //获取当前文件的路径
@@ -171,4 +182,19 @@ function hpe($content) {
 
     return $clean_html;
 
+}
+
+
+// 生成令牌
+function csrf() {
+
+    if(!isset($_SESSION['token'])) {
+        // 生成一个随机的令牌
+        $token = md5( rand(1,99999) . microtime() );
+
+        // 保存到$_SESSION
+        $_SESSION['token'] = $token;
+    }
+
+    return $_SESSION['token'];
 }
