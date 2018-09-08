@@ -5,6 +5,32 @@ namespace Models;
 use PDO;
 class Blog extends Base{
 
+    // 为某一篇日志生成静态页
+    // 参数：日志的ID
+    public function makeHtml($id) {
+        // 1. 取出日志的信息
+        $blog = $this->find($id);
+
+        // 2. 打开缓冲区、并且加载视图到缓冲区
+        ob_start();
+
+        view('blogs.content', [
+            'blog' => $blog,
+        ]);
+
+        // 3. 从缓冲区中取出视图并写到静态页中
+        $str = ob_get_clean();
+        file_put_contents(ROOT.'public/contents/'.$id.'.html', $str);
+    }
+
+    // 删除静态页
+    public function deleteHtml($id) {
+        // unlink （在硬盘上删除一个文件）
+        // @ 防止报错：有这个文件就删除，没有就不删，不用报错 
+        @unlink(ROOT.'public/contents/'.$id.'.html');
+    }
+
+
     // 取出一篇日志  修改
     public function find($id) {
         $stmt = self::$pdo->prepare('SELECT * FROM blogs  where id = ?');
@@ -167,9 +193,9 @@ class Blog extends Base{
            'data'=>$data,
        ];
     } 
-    public function content2html(){
+    public function content2html() {
         //取日志的数据
-        $pdo = new PDO('mysql:host=127.0.0.1;dbname=blog','root','');
+        $pdo = new PDO('mysql:host=127.0.0.1;dbname=myblog','root','');
         $pdo->exec('set names utf8');
 
         $stmt = $pdo->query('select * from blogs');
@@ -187,7 +213,7 @@ class Blog extends Base{
             //取出缓冲区的内容
             $str = ob_get_contents();
             //生成静态页
-            file_put_contents(ROOT.'public/contents/'.$v['id'].'.html',$str);
+            file_put_contents(ROOT.'public/contents/'.$v['id'].'.html', $str);
             //清空缓存区
             ob_clean();
 
