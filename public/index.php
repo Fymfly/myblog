@@ -205,5 +205,5 @@ function csrf_field() {
 
     $csrf = isset($_SESSION['token']) ? $_SESSION['token'] : csrf();
 
-    echo "<input type='hidden' name='_token' value=''>";
+    echo "<input type='hidden' name='_token' value='{$csrf}'>";
 }

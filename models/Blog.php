@@ -5,6 +5,17 @@ namespace Models;
 use PDO;
 class Blog extends Base{
 
+    // 取出一篇日志  修改
+    public function find($id) {
+        $stmt = self::$pdo->prepare('SELECT * FROM blogs  where id = ?');
+        $stmt->execute([
+            $id
+        ]);
+
+        // 取出数据
+        return $stmt->fetch();
+    }
+
     // 删除日志
     public function delete($id) {
 
@@ -15,6 +26,41 @@ class Blog extends Base{
             $_SESSION['id'],
         ]);
     }
+
+    // 修改日志，更新数据库
+    public function update($title,$content,$is_show,$id) {
+
+        $stmt = self::$pdo->prepare("UPDATE blogs SET title=?,content=?,is_show=? WHERE id=?");
+        $ret = $stmt->execute([
+            $title,
+            $content,
+            $is_show,
+            $id,
+        ]);
+    }
+
+    public function add($title,$content,$is_show) {
+
+        $stmt = self::$pdo->prepare("INSERT INTO blogs(title,content,is_show,user_id) VALUES(?,?,?,?)");
+        $ret = $stmt->execute([
+            $title,
+            $content,
+            $is_show,
+            $_SESSION['id'],
+        ]);
+        if(!$ret){
+            echo "失败";
+            alert('请先登录');
+            //获取失败信息
+            $error = $stmt->errorInfo();
+            echo '<pre>';
+
+            var_dump($error);
+            exit;
+    }
+    //返回插入的记录的ID
+    return self::$pdo->lastInsertId();
+}   
 
     public function search(){
         
@@ -169,7 +215,7 @@ class Blog extends Base{
     }
     
 //从数据库中取出日志的浏览量
-public function getDisplay($id){
+public function getDisplay($id) {
 
      //使用日志id拼出键名
      $key = "blog-{$id}";
@@ -209,28 +255,6 @@ public function displayToDb(){
         $sql = "update blogs display={$v} where id ={$id}";
         self::$pdo->exec($sql);
     }
-}
-public function add($title,$content,$is_show)
-{
-    $stmt = self::$pdo->prepare("INSERT INTO blogs(title,content,is_show,user_id) VALUES(?,?,?,?)");
-    $ret = $stmt->execute([
-        $title,
-        $content,
-        $is_show,
-        $_SESSION['id'],
-    ]);
-    if(!$ret){
-        echo "失败";
-        alert('请先登录');
-        //获取失败信息
-        $error = $stmt->errorInfo();
-        echo '<pre>';
-
-        var_dump($error);
-        exit;
-    }
-    //返回插入的记录的ID
-    return self::$pdo->lastInsertId();
 }
 
 }

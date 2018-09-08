@@ -4,8 +4,38 @@ use models\Blog;
 
 class BlogController{
 
-    public function delete() {
+    // 更新表单
+    public function update() {
+        $title = $_POST['title'];
+        $content = $_POST['content'];
+        $is_show = $_POST['is_show'];
+        $id = $_POST['id'];
+
+        // 更新数据库
+        $blog = new Blog;
+        $blog->update($title, $content, $is_show, $id);
+
+        message('修改成功！', 0, '/blog/index');
+    }
+
+
+    // 修改表单
+    public function edit() {
         $id = $_GET['id'];
+        // 根据ID取出日志的信息
+
+        $blog = new Blog;
+        $data = $blog->find($id);
+
+        view('blogs.edit', [
+            'data' => $data,
+        ]);
+    }
+
+
+    // 删除
+    public function delete() {
+        $id = $_POST['id'];
 
         $blog = new Blog;
         $blog->delete($id);
@@ -62,6 +92,7 @@ class BlogController{
     } 
 
 
+    // 添加日志
     public function store(){
         $title = $_POST['title'];
         $content = $_POST['content'];
@@ -69,6 +100,7 @@ class BlogController{
 
         $blog = new Blog;
         $blog->add($title,$content,$is_show);
+
 
         //跳转
         message('发表成功',2,'/blog/index');
