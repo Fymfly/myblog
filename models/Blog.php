@@ -76,7 +76,6 @@ class Blog extends Base{
         ]);
         if(!$ret){
             echo "失败";
-            alert('请先登录');
             //获取失败信息
             $error = $stmt->errorInfo();
             echo '<pre>';
@@ -253,7 +252,7 @@ public function getDisplay($id) {
     if($redis->hexists('blog_displays',$key)){
         //累加并且 返回加完之后的值
         $newNum = $redis->hincrby('blog_displays',$key,1);
-        echo $newNum;
+        return $newNum;
     }else{
         //从数据库中取出浏览量
         $stmt = self::$pdo->prepare('select display from blogs where id=?');
@@ -262,9 +261,9 @@ public function getDisplay($id) {
         $display++;
         //保存到redis
         $redis->hset('blog_displays',$key,$display);
-        echo $display;
+        return $display;
 
-}
+    }
     
 }
 //把内存中的浏览量写回到数据库中

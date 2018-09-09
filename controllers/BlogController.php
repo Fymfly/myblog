@@ -4,6 +4,23 @@ use models\Blog;
 
 class BlogController{
 
+    // 显示私有日志
+    public function content() {
+        // 1、接收ID，并取出日志信息
+        $id = $_GET['id'];
+        $model = new Blog;
+        $blog = $model->find($id);
+
+        // 2、判断这个日志是不是我的日志
+        if($_SESSION['id'] != $blog['user_id'])
+            die('无权访问！');
+
+        // 3、加载视图
+        view('blogs.content',[
+            'blog' => $blog,
+        ]);
+    }
+
     // 更新表单
     public function update() {
         $title = $_POST['title'];
@@ -25,7 +42,7 @@ class BlogController{
             $blog->deleteHtml($id);
         }
 
-        message('修改成功！', 0, '/blog/index');
+        message('修改成功！', 2, '/blog/index');
     }
 
 
@@ -81,15 +98,21 @@ class BlogController{
     }
 
 
-    public function display()
-    {
+    public function display() {
         //接收日志id
         $id = (int)$_GET['id'];
-        // echo $id;
-        // echo" <br/>";
+        
+
         $blog = new Blog;
         //把浏览量+1 并输出 （如果内存中没有就查询数据库，如果内存有就直接操作）
-        echo $blog->getDisplay($id);
+        $display =  $blog->getDisplay($id);
+
+        // 返回多个数据时必须要用 JSON
+        echo json_encode([
+            'display' => $display,
+            'email' => isset($_SESSION['email']) ? $_SESSION['email'] : ''
+        ]);
+
 
     }
 
