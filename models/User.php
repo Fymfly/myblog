@@ -10,6 +10,8 @@ class User extends Base{
             $pass,
         ]);
     }
+
+
     public function login($email,$pass){
         $stmt = self::$pdo->prepare('select * from users where email = ? and password=?');
         $stmt->execute([
@@ -21,10 +23,23 @@ class User extends Base{
             
             $_SESSION['id'] = $user['id'];
             $_SESSION['email'] = $user['email'];
+            $_SESSION['money'] = $user['money'];
             return true;
         }
         else{
             return false;
         }
+    }
+
+
+    // 为用户增加金额
+    public function addMoney($money, $userId) {
+        $stmt = self::$pdo->prepare("UPDATE users SET money=money+? WHERE id=?");
+        $stmt->execute([
+            $money,
+            $userId,
+        ]);
+        // 更新 SESSION 中的余额
+        $_SESSION['money'] += $money;
     }
 }

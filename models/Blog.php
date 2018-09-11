@@ -87,6 +87,7 @@ class Blog extends Base{
     return self::$pdo->lastInsertId();
 }   
 
+    // 搜索日志
     public function search(){
         
         // 判断是否登录
@@ -272,14 +273,20 @@ public function displayToDb(){
     //连接redis
     $redis = \libs\Redis::getInstance();
 
-    $data = $redis->hegetall('blog_displays');
+    $data = $redis->hgetall('blog_displays');
 
     //2.更新回数据库
     foreach($data as $k=>$v){
         $id = str_replace('blog-','',$k);
-        $sql = "update blogs display={$v} where id ={$id}";
+        $sql = "update blogs set display={$v} where id ={$id}";
         self::$pdo->exec($sql);
     }
+}
+
+// 视图
+public function getNew(){
+    $stmt = self::$pdo->query('SELECT * FROM blogs WHERE is_show=1 ORDER BY id DESC LIMIT 20');
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 }

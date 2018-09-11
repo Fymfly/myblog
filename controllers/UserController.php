@@ -2,8 +2,34 @@
 namespace controllers;
 
 use models\User;
+use models\Order;
 
 class UserController{
+
+    // 生成充值订单
+    public function docharge() {
+
+        // 生成订单
+        $money = $_POST['money'];
+        $model = new Order;
+        $model->create($money);
+        message('充值订单已生成，请立即支付', 2 ,'/user/orders');
+    }
+
+    // 订单列表
+    public function orders() {
+
+        $order = new Order;
+        // 搜索数据
+        $data = $order->search();
+
+        view('users.order',$data);
+    }
+
+    // 显示充值视图
+    public function charge() {
+        view('users.charge');
+    }
 
     public function hello(){
 
@@ -91,6 +117,7 @@ class UserController{
         }
        
     }
+    
     public function login(){
             view('users.login');
     }

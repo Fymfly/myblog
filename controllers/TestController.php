@@ -3,6 +3,15 @@ namespace controllers;
 
 class TestController{
 
+    // 测试生成订单ID
+    public function testSnowflake() {
+
+        $flake = new \libs\Snowflake(1013);
+        for($i=0;$i<10;$i++) {
+            echo $flake->nextId() . '<br>';
+        }
+    }
+
     // 在线编辑器过滤
     public function testPurify() {
 
