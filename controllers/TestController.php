@@ -3,6 +3,13 @@ namespace controllers;
 
 class TestController{
 
+    // 测试事务
+    public function testTrans() {
+        $model = new \models\User;
+        $model->trans();
+    }
+
+
     // 测试生成订单ID
     public function testSnowflake() {
 

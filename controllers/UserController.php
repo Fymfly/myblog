@@ -6,6 +6,12 @@ use models\Order;
 
 class UserController{
 
+    // 更新余额
+    public function money() {
+        $user = new User;
+        echo $user->getMoney();
+    }
+
     // 生成充值订单
     public function docharge() {
 

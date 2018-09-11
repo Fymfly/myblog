@@ -29,7 +29,7 @@ require(ROOT.'vendor/autoload.php');
 function autoload($class){
     // echo $class;
     $path = str_replace('\\','/',$class);
-    
+    // echo $path;
     require ROOT.$path.'.php';
  
 }
