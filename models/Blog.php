@@ -283,7 +283,7 @@ public function displayToDb(){
     }
 }
 
-// 视图
+// 获取最新的20条日志
 public function getNew(){
     $stmt = self::$pdo->query('SELECT * FROM blogs WHERE is_show=1 ORDER BY id DESC LIMIT 20');
     return $stmt->fetchAll(PDO::FETCH_ASSOC);

@@ -1,7 +1,7 @@
 <?php
 namespace controllers;
 
-class TestController{
+class TestController{   
 
     // 测试事务
     public function testTrans() {
