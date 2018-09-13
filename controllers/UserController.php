@@ -6,6 +6,31 @@ use models\Order;
 
 class UserController{
 
+    public function test() {
+        sleep();
+    }
+
+    // 查询订单状态的接口
+    public function orderStatus() {
+        
+        $sn = $_GET['sn'];
+        // 获取的次数
+        $try = 10;
+        $model = new Order;
+        do
+        {
+            $info = $model->findBySn($sn);
+            if($info['status'] == 0)
+            {
+                sleep(1);
+                $try--;
+            }
+            else
+                break;
+        }while($try>0);
+        echo $info['status'];
+    }
+
     // 更新余额
     public function money() {
         $user = new User;
