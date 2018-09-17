@@ -3,6 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <title><?=$blog['title']?></title>
+    <style>
+        .agree-list {
+            border: 1px solid skyblue;
+            padding: 0;
+            text-align: center;
+        }
+
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 1px solid skyblue;
+            padding: 5px;
+            margin-top: 10px;
+            margin-left: 20px;
+        }
+
+        .agree-list h3 {
+            padding: 0;
+            margin: 0;
+            background-color: #eee;
+            padding: 5px; 
+        }
+
+    </style>
 </head>
 <body>
 
@@ -14,6 +39,17 @@
     <p>浏览量：<span id="display"></span></p>
     <p><?=$blog['content']?></p>
 
+    <img id="btn-agree" style="width: 100px; height: 100px;" src="/images/agree.jpg" alt="">
+
+
+    <div class="agree-list">
+        <h3>点赞列表</h3>
+        <div id="avatar_list">
+
+        </div>
+    </div>
+
+    
     <?php view('common.footer') ?>
     
 </body>
@@ -62,6 +98,47 @@
             
             // 获取id=menu的div 并把按钮放进去
             $("#menu").html(html);
+        }
+    });
+
+
+    $("#btn-agree").click(function() {
+        $.ajax({
+            type:"POST",
+            url:"/blog/agreements?id="+id,
+            dataType:"json",
+            success:function(data) {
+                if(data.status_code == 200) {
+                     
+                    alert('成功~');
+
+                } else {
+
+                    alert(data.message);
+                }
+            }
+        });
+    });
+
+
+    $.ajax({
+        type:"GET",
+        url:"/blog/agreements_list?id="+id,
+        dataType:"json",
+        success:function(data) {
+            
+            if( data.status_code == 200) {
+
+                var html = '';
+
+                for(var i=0; i<data.data.length; i++) {
+                    var avatar = data.data[i].avatar ? data.data[i].avatar : '/images/avatar.jpg';
+                    html += '<img title="'+data.data[i].email+'" class="avatar" src="'+avatar+'" alt="">';
+                }
+
+                // 把字符串放在页面
+                $("#avatar_list").html( html ) 
+            }
         }
     });
         
