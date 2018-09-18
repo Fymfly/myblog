@@ -1,13 +1,13 @@
 <?php
-// namespace models;
+namespace models;
 
-// use PDO;
+use PDO;
 
-// class Redbag extends Base {
+class Redbag extends Base {
 
-//     public function create($userId) {
+    public function create($userId) {
 
-//         $stmt = self::$pdo->prepare("INSERT INTO redbags(user_id) VALUES(?)");
-//         $stmt->execute([$userId]);
-//     }
+        $stmt = self::$pdo->prepare("INSERT INTO redbags(user_id) VALUES(?)");
+        $stmt->execute([$userId]);
+    }
 }

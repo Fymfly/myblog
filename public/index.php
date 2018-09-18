@@ -1,5 +1,8 @@
 <?php
 
+// 设置时区
+date_default_timezone_set('PRC');
+
 //设置SESSION 保存
 ini_set('session.save_handler','redis');
 ini_set('session.save_path','tcp://127.0.0.1:6379?database=3');
