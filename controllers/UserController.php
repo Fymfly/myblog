@@ -3,6 +3,7 @@ namespace controllers;
 
 use models\User;
 use models\Order;
+use Intervention\Image\ImageManagerStatic as Image;
 
 class UserController{
 
@@ -87,6 +88,13 @@ class UserController{
         // 上传新头像
         $upload = \libs\Uploader::make();
         $path = $upload->upload('avatar', 'avatar');
+
+        // 裁切图片
+        $image = Image::make(ROOT . 'public/uploads/'.$path);
+        // 注意：Crop 参数必须是整数，所以需要转成整数：（int）
+        $image->crop((int)$_POST['w'], (int)$_POST['h'], (int)$_POST['x'], (int)$_POST['y']);
+        // 保存图片
+        $image->save(ROOT . 'public/uploads/'.$path);
 
         // 保存到 user表 中
         $model = new \models\User;
