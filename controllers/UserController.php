@@ -7,6 +7,13 @@ use Intervention\Image\ImageManagerStatic as Image;
 
 class UserController{
 
+    // 排行榜
+    public function setActiveUsers() {
+        
+        $user = new User;
+        $user->computeActiveUsers();
+    }
+
     // 把图片块合并
     public function uploadbig() {
 

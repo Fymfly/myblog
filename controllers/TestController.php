@@ -5,6 +5,58 @@ use Intervention\Image\ImageManagerStatic as Image;
 
 class TestController{   
 
+    // 排行榜
+    public function test() {
+        
+        // 发表日志的分值
+        $data =[
+            '3' => 40,
+            '6' => 5,
+            '8' => 22,
+        ];
+        // 发表评论的分值
+        $data1 =[
+            '9' => 100,
+            '45' => 5,
+            '8' => 22,
+        ];
+        // 发表日志的分值
+        $data2 =[
+            '5' => 50,
+            '6' => 5,
+            '98' => 45,
+        ];
+
+
+        // 把第二个数组中的数据合并到第一个数组中
+        foreach($data1 as $k => $v) {
+
+            if( isset( $data[$k] ) ) 
+                $data[$k] += $v;
+            else 
+                $data[$k] =$v; 
+        }
+
+        // 把第三个数组中的数据合并到第一个数组中
+        foreach($data2 as $k => $v) {
+
+            if( isset( $data[$k] ) ) 
+                $data[$k] += $v;
+            else 
+                $data[$k] =$v; 
+        }
+
+        // 把合并之后的数据根据分值倒叙排列
+        arsort( $data );
+
+        // 截取前20个
+        var_dump(array_splice($data, 0, 3));
+
+        echo '<pre>';
+        var_dump( $data );
+
+    }
+
     // 水印图片
     public function testImage() {
 
